@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+from argparse import Namespace
 
 expenses_file = "app.json"
 
@@ -11,7 +12,7 @@ def load_json():
         with open(expenses_file, 'r') as file:
             return json.load(file)
 
-def save_to_json(expenses):
+def save_to_json(expenses : list[dict]):
     with open(expenses_file, 'w') as file:
         json.dump(expenses, file, indent = 2)
 
@@ -32,21 +33,9 @@ def parser_handler():
     delete_parser.add_argument('--id', type = int, help = "id of the expense to delete", required = True)
 
     args = parser.parse_args()
-    return args.command
-
-def add_expense():
-    pass
-
-def list_expense():
-    pass
-
-def delete_expense():
-    pass
-
-def summary_expense():
-    pass
+    return args
 
 def main():
     expenses: list[dict] = load_json()
-    # other finctions
+    args : Namespace = parser_handler()
     save_to_json(expenses)
