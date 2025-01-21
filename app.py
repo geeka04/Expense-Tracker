@@ -7,10 +7,11 @@ expenses_file = "app.json"
 
 def load_json():
     if not os.path.exists(expenses_file):
-        return[]
-    else:
-        with open(expenses_file, 'r') as file:
-            return json.load(file)
+        with open(expenses_file, 'w') as file:
+            file.write('[]')
+    
+    with open(expenses_file, 'r') as file:
+        return json.load(file)
 
 def save_to_json(expenses : list[dict]):
     with open(expenses_file, 'w') as file:
@@ -36,6 +37,9 @@ def parser_handler():
     return args
 
 def main():
-    expenses: list[dict] = load_json()
-    args : Namespace = parser_handler()
+    expenses = load_json()
+    args = parser_handler()
     save_to_json(expenses)
+
+if __name__ == "__main__":
+    main()
