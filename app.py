@@ -2,6 +2,7 @@ import argparse
 import json
 import os
 from argparse import Namespace
+from datetime import date
 
 expenses_file = "app.json"
 
@@ -17,7 +18,7 @@ def save_to_json(expenses : list[dict]):
     with open(expenses_file, 'w') as file:
         json.dump(expenses, file, indent = 2)
 
-def parser_handler():
+def parser_handler() -> Namespace:
     parser = argparse.ArgumentParser(description = "CLI expense tracker")
     subparsers = parser.add_subparsers(dest = "command")
 
@@ -36,9 +37,38 @@ def parser_handler():
     args = parser.parse_args()
     return args
 
+def handle_command(args : Namespace, expenses):
+    commands = {
+        "add": lambda : add_expense(args.description, args.amount, expenses)
+    }
+
+    command = commands.get(args.command)
+    if command:
+        command()
+    else:
+        print("Invalid command")
+
+def add_expense(desc : str, amount : int, expenses : list[dict]):
+    if not expenses:
+        expense_id = 1
+    else:
+        expense_id = max(expense['Id'] for expense in expenses) + 1
+
+    new_expense = {
+        "Id" : expense_id,
+        "Date" : date.today().isoformat(),
+        "Description" : desc,
+        "Amount" : amount
+    }
+
+    expenses.append(new_expense)
+    print("Expense added successfully")
+
+
 def main():
     expenses = load_json()
-    args = parser_handler()
+    args : Namespace = parser_handler()
+    handle_command(args, expenses)
     save_to_json(expenses)
 
 if __name__ == "__main__":
