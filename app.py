@@ -30,7 +30,7 @@ def parser_handler() -> Namespace:
     list_parser = subparsers.add_parser('list', help = "list all expenses")
 
     summary_parser = subparsers.add_parser('summary', help = "summary of all expenses")
-    summary_parser.add_argument('--month', type = str, help = "the month of which the summary is needed")
+    summary_parser.add_argument('--month', type = int, help = "the month of which the summary is needed")
 
     delete_parser = subparsers.add_parser('delete', help = "delete an expense")
     delete_parser.add_argument('--id', type = int, help = "id of the expense to delete", required = True)
@@ -41,7 +41,8 @@ def parser_handler() -> Namespace:
 def handle_command(args : Namespace, expenses : list[dict]):
     commands = {
         "add" : lambda : add_expense(args.description, args.amount, expenses),
-        "list" :lambda : list_expenses(expenses) 
+        "list" :lambda : list_expenses(expenses),
+        "delete" : lambda : delete_expense(args.id, expenses) 
     }
 
     command = commands.get(args.command)
@@ -73,6 +74,15 @@ def list_expenses(expenses : list[dict]) -> None:
     else:
         print("No expenses to show")
 
+def delete_expense(id : int, expenses : list[dict]) -> None:
+    if not expenses:
+        print("File is empty")
+    for expense in expenses:
+        if expense['Id'] == id:
+            expenses.remove(expense)
+            print("Expense deleted successfully")
+        else:
+            print("Id not found")
 
 def main():
     expenses = load_json()
