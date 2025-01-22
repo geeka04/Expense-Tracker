@@ -65,7 +65,7 @@ def add_expense(desc : str, amount : int, expenses : list[dict]) -> None:
     }
 
     expenses.append(new_expense)
-    print("Expense added successfully")
+    print(f"Expense added successfully (Id: {expense_id})")
 
 def list_expenses(expenses : list[dict]) -> None:
     table = tabulate(expenses, headers = "keys")
