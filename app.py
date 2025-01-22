@@ -3,6 +3,7 @@ import json
 import os
 from argparse import Namespace
 from datetime import date
+from tabulate import tabulate
 
 expenses_file = "app.json"
 
@@ -37,9 +38,10 @@ def parser_handler() -> Namespace:
     args = parser.parse_args()
     return args
 
-def handle_command(args : Namespace, expenses):
+def handle_command(args : Namespace, expenses : list[dict]):
     commands = {
-        "add": lambda : add_expense(args.description, args.amount, expenses)
+        "add" : lambda : add_expense(args.description, args.amount, expenses),
+        "list" :lambda : list_expenses(expenses) 
     }
 
     command = commands.get(args.command)
@@ -48,7 +50,7 @@ def handle_command(args : Namespace, expenses):
     else:
         print("Invalid command")
 
-def add_expense(desc : str, amount : int, expenses : list[dict]):
+def add_expense(desc : str, amount : int, expenses : list[dict]) -> None:
     if not expenses:
         expense_id = 1
     else:
@@ -63,6 +65,13 @@ def add_expense(desc : str, amount : int, expenses : list[dict]):
 
     expenses.append(new_expense)
     print("Expense added successfully")
+
+def list_expenses(expenses : list[dict]) -> None:
+    table = tabulate(expenses, headers = "keys")
+    if table:
+        print(table)
+    else:
+        print("No expenses to show")
 
 
 def main():
