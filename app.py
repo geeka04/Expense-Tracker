@@ -8,7 +8,7 @@ from tabulate import tabulate
 expenses_file = "app.json"
 
 def load_json():
-    if not os.path.exists(expenses_file):
+    if not os.path.exists(expenses_file) or os.path.getsize(expenses_file) == 0:
         with open(expenses_file, 'w') as file:
             file.write('[]')
     
