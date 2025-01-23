@@ -5,9 +5,9 @@ from argparse import Namespace
 from datetime import date, datetime
 from tabulate import tabulate
 
-expenses_file = "app.json"
+expenses_file : str = "app.json"
 
-def load_json():
+def load_json() -> list[dict] | None:
     try:
         if not os.path.exists(expenses_file) or os.path.getsize(expenses_file) == 0:
             with open(expenses_file, 'w') as file:
@@ -18,7 +18,7 @@ def load_json():
     except (IOError, json.JSONDecodeError) as e:
         print(f"Error Loading the file: {e}")
 
-def save_to_json(expenses : list[dict]):
+def save_to_json(expenses : list[dict]) -> None:
     try:
         with open(expenses_file, 'w') as file:
             json.dump(expenses, file, indent = 2)
@@ -42,12 +42,13 @@ def parser_handler() -> Namespace:
         delete_parser = subparsers.add_parser('delete', help = "delete an expense")
         delete_parser.add_argument('--id', type = int, help = "id of the expense to delete", required = True)
 
-        args = parser.parse_args()
+        args : Namespace = parser.parse_args()
         return args
+    
     except Exception as e:
         print(f"Error parsing the command: {e}")
 
-def handle_command(args : Namespace, expenses : list[dict]):
+def handle_command(args : Namespace, expenses : list[dict]) -> None:
     commands = {
         "add" : lambda : add_expense(args.description, args.amount, expenses),
         "list" :lambda : list_expenses(expenses),
@@ -85,14 +86,18 @@ def list_expenses(expenses : list[dict]) -> None:
         print("No expenses to show")
 
 def delete_expense(id : int, expenses : list[dict]) -> None:
+    flag = 0
     if not expenses:
         print("File is empty")
     for expense in expenses:
         if expense['Id'] == id:
             expenses.remove(expense)
-            print("Expense deleted successfully")
-        else:
-            print("Id not found")
+            flag = flag + 1
+    
+    if flag > 0:
+        print("Expense deleted successfully")
+    else:
+        print("ID not found")            
 
 def summary_expenses(expenses : list[dict], month : int = None):
     amount = 0
