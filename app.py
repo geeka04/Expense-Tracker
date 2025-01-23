@@ -2,7 +2,7 @@ import argparse
 import json
 import os
 from argparse import Namespace
-from datetime import date
+from datetime import date, datetime
 from tabulate import tabulate
 
 expenses_file = "app.json"
@@ -42,7 +42,8 @@ def handle_command(args : Namespace, expenses : list[dict]):
     commands = {
         "add" : lambda : add_expense(args.description, args.amount, expenses),
         "list" :lambda : list_expenses(expenses),
-        "delete" : lambda : delete_expense(args.id, expenses) 
+        "delete" : lambda : delete_expense(args.id, expenses),
+        "summary" : lambda: summary_expenses(expenses, args.month)
     }
 
     command = commands.get(args.command)
@@ -83,6 +84,16 @@ def delete_expense(id : int, expenses : list[dict]) -> None:
             print("Expense deleted successfully")
         else:
             print("Id not found")
+
+def summary_expenses(expenses : list[dict], month : int = None):
+    amount = 0
+    for expense in expenses:
+        m = datetime.strptime(expense['Date'], '%Y-%m-%d').date()
+        m_number = int(m.strftime("%m"))
+        if month == None or month == m_number:
+            amount = amount + expense['Amount']
+    print(amount)
+
 
 def main():
     expenses = load_json()
