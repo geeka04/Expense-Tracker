@@ -49,18 +49,21 @@ def parser_handler() -> Namespace:
         print(f"Error parsing the command: {e}")
 
 def handle_command(args : Namespace, expenses : list[dict]) -> None:
-    commands = {
-        "add" : lambda : add_expense(args.description, args.amount, expenses),
-        "list" :lambda : list_expenses(expenses),
-        "delete" : lambda : delete_expense(args.id, expenses),
-        "summary" : lambda: summary_expenses(expenses, args.month)
-    }
+    try:    
+        commands = {
+            "add" : lambda : add_expense(args.description, args.amount, expenses),
+            "list" :lambda : list_expenses(expenses),
+            "delete" : lambda : delete_expense(args.id, expenses),
+            "summary" : lambda: summary_expenses(expenses, args.month)
+        }
 
-    command = commands.get(args.command)
-    if command:
-        command()
-    else:
-        print("Invalid command")
+        command = commands.get(args.command)
+        if command:
+            command()
+        else:
+            print("Invalid command")
+    except AttributeError as e:
+        print(f"JSON file seems to be corrupted: {e}")
 
 def add_expense(desc : str, amount : int, expenses : list[dict]) -> None:
     if not expenses:
@@ -111,7 +114,7 @@ def summary_expenses(expenses : list[dict], month : int = None):
     if flag > 0 :
         print(f"The total expense is {amount}")
     else: 
-        print("No expenses for the month")
+        print("No expenses recorded for the month")
 
 def main():
     expenses = load_json()
